@@ -1,5 +1,16 @@
+db.sql
+bot/bot.ini
+bot.ini
+.idea
+env
+test.session
+test.session-journal
+user_bot.session
+user_bot.session-journal
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
+
 *.py[cod]
 *$py.class
 
@@ -32,6 +43,9 @@ MANIFEST
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
+default_name.session
+
+default_name.session-journal
 
 # Installer logs
 pip-log.txt
@@ -109,6 +123,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.xlsx
 
 # Spyder project settings
 .spyderproject
@@ -124,6 +139,7 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
 
 # Pyre type checker
 .pyre/
