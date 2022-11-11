@@ -31,10 +31,9 @@ async def waiting_name(m: Message, repo: Repo, db, logger, config, state: FSMCon
     name = m.text
     await m.delete()
     role_id = await repo.get_any_role_id()
-    db.add(User(name=name, role_id=role_id))
     db.commit()
     list_users = await repo.list_users_str()
-    file = create_xlsx(list_users, message_id)
+    file = create_xlsx(list_users, message_id, db)
     f = get_file(file)
     await m.bot.send_document(m.chat.id, f)
     f.close()
