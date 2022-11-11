@@ -1,15 +1,12 @@
+import random
+
 import asyncpgx
 
 from typing import List
 from sqlalchemy import select, delete, update
 from sqlalchemy.dialects.postgresql import insert
 
-from models.schemas import User, BlackList
-
-
-async def create_pool(user, password, database, host, echo):
-    pool = await asyncpgx.create_pool(database=database, user=user, password=password, host=host)
-    return pool
+from models.schemas import User, Role
 
 
 class Repo:
@@ -21,45 +18,18 @@ class Repo:
 
     async def list_users_str(self) -> List[int]:
         """List all bot users with balance"""
-        res = await self.conn.execute(select(User))
+        res = self.conn.execute(select(User))
         res = res.all()
+        res = [(i[0].name, i[0].role_id, i[0].birth) for i in res]
 
-        res = [f'{i[0].id}      -       {i[0].username}     -       🏦  {i[0].balance}' for i in res]
         return res
 
-    async def ban_user(self, user_data) -> Exception | bool:
-        # TODO сделать бан по username
-        try:
-            await self.conn.execute(
-                insert(BlackList).values({"id": user_data, }).on_conflict_do_nothing())
-            await self.conn.commit()
-            return True
-        except Exception as err:
-            self.logger.error(err)
-            return err
-
-    async def unban_user(self, user_data) -> Exception | bool:
-        # TODO сделать разбан по username
-        try:
-            await self.conn.execute(
-                delete(BlackList).where(BlackList.id == user_data))
-            await self.conn.commit()
-            return True
-        except Exception as err:
-            self.logger.error(err)
-            return err
-
-    async def change_balance(self, username: str, balance: int) -> bool:
-        try:
-            await self.conn.execute(
-                update(User).where(User.username == username).values(balance=balance)
-            )
-            await self.conn.commit()
-            return True
-        except Exception as err:
-            self.logger.error(err)
-            return False
-
-    async def get_user(self, userID):
-        res = await self.conn.get(User, int(userID))
-        return res
+    async def get_any_role_id(self):
+        roles = self.conn.execute(select(Role))
+        roles = roles.all()
+        rand = 0
+        if len(roles) > 0:
+            rand = random.randint(0, len(roles) - 1)
+            return roles[rand][0].id
+        else:
+            return None
